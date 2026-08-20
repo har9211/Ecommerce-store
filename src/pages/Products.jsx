@@ -1,3 +1,4 @@
+import "../styles/product.css";
 import ProductCard from "../components/ProductCard";
 
 const products = [
@@ -26,7 +27,7 @@ function Products() {
     <main>
       <h1>Products</h1>
 
-      <div>
+      <div className="product-grid">
         {products.map((product) => (
           <ProductCard
             key={product.id}
