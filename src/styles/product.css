@@ -24,3 +24,11 @@
 .product-card button {
   margin-top: 15px;
 }
+.product-card p {
+  margin: 8px 0;
+}
+
+.product-card a {
+  display: block;
+  margin: 15px 0;
+}

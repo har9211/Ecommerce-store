@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 
 function ProductCard({ product }) {
@@ -10,6 +11,10 @@ function ProductCard({ product }) {
       <p>₹{product.price}</p>
 
       <p>{product.category}</p>
+
+      <Link to={`/product/${product.id}`}>
+        View Details
+      </Link>
 
       <button onClick={() => addToCart(product)}>
         Add to Cart
