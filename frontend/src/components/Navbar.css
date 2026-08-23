@@ -1,0 +1,141 @@
+.navbar-top {
+  background: var(--color-indigo);
+}
+
+.navbar-top-inner {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  padding-top: 16px;
+  padding-bottom: 16px;
+}
+
+.logo {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 24px;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.logo span {
+  color: var(--color-marigold);
+}
+
+.search-bar {
+  flex: 1;
+  display: flex;
+  background: #fff;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.search-bar input {
+  flex: 1;
+  border: none;
+  padding: 10px 16px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  outline: none;
+}
+
+.search-bar button {
+  background: var(--color-marigold);
+  border: none;
+  padding: 0 18px;
+  font-size: 16px;
+}
+
+.navbar-actions {
+  display: flex;
+  gap: 24px;
+  flex-shrink: 0;
+}
+
+.navbar-actions a {
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.account-menu {
+  position: relative;
+}
+
+.account-trigger {
+  background: none;
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.account-dropdown {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  background: #fff;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-card-hover);
+  min-width: 170px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 20;
+  animation: popIn 0.15s ease both;
+}
+
+.account-dropdown a,
+.account-dropdown button {
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text);
+  background: none;
+  text-align: left;
+}
+
+.account-dropdown a:hover,
+.account-dropdown button:hover {
+  background: var(--color-bg);
+}
+
+.account-dropdown button {
+  color: #D64545;
+  border-top: 1px solid var(--color-border);
+}
+
+.cart-link {
+  transition: transform 0.15s ease;
+}
+
+.navbar-categories {
+  background: var(--color-indigo-light);
+}
+
+.categories-inner {
+  display: flex;
+  gap: 28px;
+  padding: 10px 24px;
+  overflow-x: auto;
+}
+
+.categories-inner a {
+  color: #E4E2F5;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.categories-inner a:hover {
+  color: var(--color-marigold);
+}
+
+@media (max-width: 768px) {
+  .navbar-top-inner {
+    flex-wrap: wrap;
+  }
+  .search-bar {
+    order: 3;
+    flex-basis: 100%;
+  }
+}

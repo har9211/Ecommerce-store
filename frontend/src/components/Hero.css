@@ -1,0 +1,78 @@
+.hero {
+  background: linear-gradient(135deg, var(--color-indigo) 0%, var(--color-indigo-light) 100%);
+  color: #fff;
+  padding: 64px 0;
+}
+
+.hero-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.hero-text {
+  max-width: 560px;
+}
+
+.hero-eyebrow {
+  display: inline-block;
+  background: rgba(245, 165, 36, 0.15);
+  color: var(--color-marigold);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 999px;
+  margin-bottom: 20px;
+}
+
+.hero-text h1 {
+  font-size: 42px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 16px;
+}
+
+.hero-text p {
+  font-size: 16px;
+  color: #C9C6E8;
+  margin-bottom: 28px;
+  line-height: 1.6;
+}
+
+.hero-cta {
+  background: var(--color-marigold);
+  color: var(--color-indigo);
+  font-weight: 700;
+  font-size: 15px;
+  padding: 14px 32px;
+  border-radius: var(--radius-sm);
+  transition: background 0.15s ease;
+}
+
+.hero-cta:hover {
+  background: #ffb84d;
+}
+
+.hero-badge-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.hero-badge {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 12px 20px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .hero-text h1 {
+    font-size: 30px;
+  }
+}

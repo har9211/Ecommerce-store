@@ -1,0 +1,26 @@
+.payment-page {
+  padding: 40px 24px 64px;
+}
+
+.payment-demo-note {
+  background: #FFF4E5;
+  color: #8A5A00;
+  font-size: 13px;
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 24px;
+  max-width: 640px;
+}
+
+.payment-layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 32px;
+  align-items: start;
+}
+
+@media (max-width: 768px) {
+  .payment-layout {
+    grid-template-columns: 1fr;
+  }
+}

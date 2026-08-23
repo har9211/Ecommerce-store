@@ -1,0 +1,101 @@
+.orders-page {
+  padding: 40px 24px 64px;
+  min-height: 50vh;
+}
+
+.order-success-banner {
+  background: #E8F5E9;
+  color: #2E7D32;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 12px 18px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 20px;
+  animation: fadeInUp 0.4s ease both;
+}
+
+.orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.order-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 20px;
+  animation: fadeInUp 0.35s ease both;
+}
+
+.order-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.order-id {
+  display: block;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.order-date {
+  display: block;
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+.order-status {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 999px;
+}
+
+.status-gray { background: #EDEBF5; color: #4A4568; }
+.status-blue { background: #E3EFFF; color: #1D5DBF; }
+.status-purple { background: #F1E8FF; color: #7B3FE4; }
+.status-green { background: #E8F5E9; color: #2E7D32; }
+.status-red { background: #FDEDED; color: #B42318; }
+
+.order-card-items {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.order-item-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.order-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: var(--color-text-muted);
+  padding-top: 12px;
+  border-top: 1px solid var(--color-border);
+}
+
+.order-total {
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.pay-now-link {
+  display: inline-block;
+  margin-top: 12px;
+  color: var(--color-marigold-dark);
+  font-weight: 700;
+  font-size: 13px;
+}
