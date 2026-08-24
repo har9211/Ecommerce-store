@@ -17,12 +17,20 @@ export default function Navbar() {
   const { totalItems } = useCart();
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
   const handleLogout = () => {
     logout();
     setMenuOpen(false);
     navigate("/");
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    const q = searchQuery.trim();
+    if (!q) return;
+    navigate(`/search?q=${encodeURIComponent(q)}`);
   };
 
   return (
@@ -33,10 +41,16 @@ export default function Navbar() {
             Quick<span>Kart</span>
           </Link>
 
-          <div className="search-bar">
-            <input type="text" placeholder="Search for products, brands and more" />
-            <button aria-label="Search">🔍</button>
-          </div>
+          <form className="search-bar" onSubmit={handleSearch} role="search">
+            <input
+              type="text"
+              placeholder="Search products, brands and more…"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              aria-label="Search products"
+            />
+            <button type="submit" aria-label="Search">🔍</button>
+          </form>
 
           <nav className="navbar-actions">
             {isAuthenticated ? (
@@ -44,6 +58,8 @@ export default function Navbar() {
                 <button
                   className="account-trigger"
                   onClick={() => setMenuOpen((open) => !open)}
+                  aria-expanded={menuOpen}
+                  aria-haspopup="true"
                 >
                   Hi, {user.name.split(" ")[0]} ▾
                 </button>
@@ -65,7 +81,10 @@ export default function Navbar() {
               <Link to="/login">Login</Link>
             )}
             <Link to="/cart" className="cart-link">
-              Cart ({totalItems})
+              🛒 Cart
+              {totalItems > 0 && (
+                <span className="cart-badge">{totalItems}</span>
+              )}
             </Link>
           </nav>
         </div>
