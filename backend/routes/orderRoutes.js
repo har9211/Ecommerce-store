@@ -7,6 +7,8 @@ const {
   markOrderPaid,
   getAllOrders,
   updateOrderStatus,
+  fulfillOrder,
+  getAnalyticsSummary,
 } = require("../controllers/orderController");
 const { protect, adminOnly } = require("../middleware/authMiddleware");
 
@@ -16,9 +18,11 @@ const { protect, adminOnly } = require("../middleware/authMiddleware");
 
 router.post("/", protect, createOrder);
 router.get("/myorders", protect, getMyOrders);
+router.get("/stats/summary", protect, adminOnly, getAnalyticsSummary);
 router.get("/", protect, adminOnly, getAllOrders);
 router.get("/:id", protect, getOrderById);
 router.put("/:id/pay", protect, markOrderPaid);
 router.put("/:id/status", protect, adminOnly, updateOrderStatus);
+router.put("/:id/fulfill", protect, adminOnly, fulfillOrder);
 
 module.exports = router;

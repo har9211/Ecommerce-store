@@ -1,26 +1,31 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import "./Footer.css";
 
 export default function Footer() {
   const [email, setEmail] = useState("");
-  const [subStatus, setSubStatus] = useState("idle"); // idle | success | error
+  const [subscribed, setSubscribed] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubscribe = (e) => {
     e.preventDefault();
-    const trimmed = email.trim();
-    if (!trimmed || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
-      setSubStatus("error");
+    setError("");
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(email)) {
+      setError("Enter a valid email address");
       return;
     }
-    setSubStatus("success");
+
+    // NOTE: no email service is connected yet - this just confirms the
+    // input works. Wiring this to a real provider (e.g. Mailchimp) is a
+    // separate backend task for later.
+    setSubscribed(true);
     setEmail("");
   };
 
   return (
     <footer className="footer">
       <div className="container footer-grid">
-        {/* Brand */}
         <div>
           <h3 className="footer-logo">
             Quick<span>Kart</span>
@@ -28,73 +33,51 @@ export default function Footer() {
           <p className="footer-tagline">
             Everyday essentials, delivered fast.
           </p>
-          <div className="footer-socials">
-            <a href="#" aria-label="Twitter" className="social-icon">𝕏</a>
-            <a href="#" aria-label="Instagram" className="social-icon">📸</a>
-            <a href="#" aria-label="Facebook" className="social-icon">f</a>
-          </div>
         </div>
 
-        {/* Shop links */}
         <div>
           <h4>Shop</h4>
           <ul>
-            <li><Link to="/category/Electronics">Electronics</Link></li>
-            <li><Link to="/category/Home%20%26%20Kitchen">Home &amp; Kitchen</Link></li>
-            <li><Link to="/category/Fashion">Fashion</Link></li>
-            <li><Link to="/category/Health%20Care">Health Care</Link></li>
-            <li><Link to="/category/Beauty">Beauty</Link></li>
+            <li>Electronics</li>
+            <li>Home & Kitchen</li>
+            <li>Fashion</li>
+            <li>Health Care</li>
           </ul>
         </div>
 
-        {/* Support links */}
         <div>
           <h4>Support</h4>
           <ul>
-            <li><a href="#">Contact Us</a></li>
-            <li><a href="#">Shipping Policy</a></li>
-            <li><a href="#">Returns &amp; Replacement</a></li>
-            <li><a href="#">FAQs</a></li>
-            <li><Link to="/orders">Track Order</Link></li>
+            <li>Contact Us</li>
+            <li>Shipping Policy</li>
+            <li>Returns & Replacement</li>
+            <li>FAQs</li>
           </ul>
         </div>
 
-        {/* Newsletter */}
         <div>
           <h4>Newsletter</h4>
           <p className="footer-tagline">Get updates on new arrivals and offers.</p>
-          {subStatus === "success" ? (
-            <div className="newsletter-success">
-              🎉 You're subscribed! Thanks for joining.
-            </div>
+          {subscribed ? (
+            <p className="newsletter-success">✅ Subscribed! Thanks for joining.</p>
           ) : (
-            <form className="newsletter-row" onSubmit={handleSubscribe} noValidate>
+            <form className="newsletter-row" onSubmit={handleSubscribe}>
               <input
                 type="email"
-                placeholder="Your email address"
+                placeholder="Your email"
                 value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  if (subStatus === "error") setSubStatus("idle");
-                }}
-                aria-label="Email address for newsletter"
+                onChange={(e) => setEmail(e.target.value)}
               />
               <button type="submit">Join</button>
             </form>
           )}
-          {subStatus === "error" && (
-            <p className="newsletter-error">Please enter a valid email address.</p>
-          )}
+          {error && <p className="newsletter-error">{error}</p>}
         </div>
       </div>
 
       <div className="footer-bottom">
-        <div className="container footer-bottom-inner">
-          <span>© {new Date().getFullYear()} QuickKart. Built for learning — not a real store.</span>
-          <span className="footer-bottom-links">
-            <a href="#">Privacy</a>
-            <a href="#">Terms</a>
-          </span>
+        <div className="container">
+          © {new Date().getFullYear()} QuickKart. Built for learning — not a real store.
         </div>
       </div>
     </footer>

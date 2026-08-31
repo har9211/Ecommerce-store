@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
+import { resolveImageUrl } from "../utils/image";
 import "./Cart.css";
 
 export default function Cart() {
@@ -40,7 +41,7 @@ export default function Cart() {
             <div key={item._id} className="cart-item">
               <div className="cart-item-image">
                 {item.image ? (
-                  <img src={item.image} alt={item.name} />
+                  <img src={resolveImageUrl(item.image)} alt={item.name} />
                 ) : (
                   <div className="cart-item-placeholder">📦</div>
                 )}

@@ -115,6 +115,72 @@ const updateOrderStatus = async (req, res) => {
   }
 };
 
+// @route  PUT /api/orders/:id/fulfill
+// @desc   Mark an order as fulfilled (admin has packed/shipped it)
+// @access Private/Admin
+const fulfillOrder = async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    order.fulfillmentStatus = "Fulfilled";
+    order.fulfilledAt = new Date();
+    const updated = await order.save();
+
+    res.json(updated);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @route  GET /api/orders/stats/summary
+// @desc   Aggregate numbers for the admin analytics dashboard
+// @access Private/Admin
+const getAnalyticsSummary = async (req, res) => {
+  try {
+    const orders = await Order.find({});
+
+    const totalRevenue = orders
+      .filter((o) => o.isPaid || o.paymentMethod === "COD")
+      .reduce((sum, o) => sum + o.totalPrice, 0);
+
+    const totalOrders = orders.length;
+
+    const ordersByStatus = orders.reduce((acc, o) => {
+      acc[o.status] = (acc[o.status] || 0) + 1;
+      return acc;
+    }, {});
+
+    // Group revenue by calendar day for the last 14 days, for a trend chart
+    const revenueByDay = {};
+    const today = new Date();
+    for (let i = 13; i >= 0; i--) {
+      const day = new Date(today);
+      day.setDate(today.getDate() - i);
+      const key = day.toISOString().slice(0, 10); // "YYYY-MM-DD"
+      revenueByDay[key] = 0;
+    }
+    orders.forEach((o) => {
+      const key = new Date(o.createdAt).toISOString().slice(0, 10);
+      if (key in revenueByDay) {
+        revenueByDay[key] += o.totalPrice;
+      }
+    });
+
+    res.json({
+      totalRevenue,
+      totalOrders,
+      ordersByStatus,
+      revenueByDay,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   createOrder,
   getMyOrders,
@@ -122,4 +188,6 @@ module.exports = {
   markOrderPaid,
   getAllOrders,
   updateOrderStatus,
+  fulfillOrder,
+  getAnalyticsSummary,
 };

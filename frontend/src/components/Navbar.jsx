@@ -1,7 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
+import PromoStrip from "./PromoStrip";
 import "./Navbar.css";
 
 const categories = [
@@ -17,8 +18,17 @@ export default function Navbar() {
   const { totalItems } = useCart();
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [scrolled, setScrolled] = useState(false);
   const navigate = useNavigate();
+
+  // Adds a subtle shadow once the page has scrolled a bit, so the navbar
+  // feels "lifted" above the content instead of blending flat into it.
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 8);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -28,28 +38,31 @@ export default function Navbar() {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    const q = searchQuery.trim();
-    if (!q) return;
-    navigate(`/search?q=${encodeURIComponent(q)}`);
+    const trimmed = searchTerm.trim();
+    if (trimmed) {
+      navigate(`/search?keyword=${encodeURIComponent(trimmed)}`);
+    }
   };
 
   return (
-    <header className="navbar">
+    <header className={`navbar ${scrolled ? "navbar-scrolled" : ""}`}>
+      <PromoStrip />
       <div className="navbar-top">
         <div className="container navbar-top-inner">
           <Link to="/" className="logo">
             Quick<span>Kart</span>
           </Link>
 
-          <form className="search-bar" onSubmit={handleSearch} role="search">
+          <form className="search-bar" onSubmit={handleSearch}>
             <input
               type="text"
-              placeholder="Search products, brands and more…"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              aria-label="Search products"
+              placeholder="Search for products, brands and more"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <button type="submit" aria-label="Search">🔍</button>
+            <button type="submit" aria-label="Search">
+              🔍
+            </button>
           </form>
 
           <nav className="navbar-actions">
@@ -58,8 +71,6 @@ export default function Navbar() {
                 <button
                   className="account-trigger"
                   onClick={() => setMenuOpen((open) => !open)}
-                  aria-expanded={menuOpen}
-                  aria-haspopup="true"
                 >
                   Hi, {user.name.split(" ")[0]} ▾
                 </button>
@@ -81,10 +92,7 @@ export default function Navbar() {
               <Link to="/login">Login</Link>
             )}
             <Link to="/cart" className="cart-link">
-              🛒 Cart
-              {totalItems > 0 && (
-                <span className="cart-badge">{totalItems}</span>
-              )}
+              Cart ({totalItems})
             </Link>
           </nav>
         </div>

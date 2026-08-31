@@ -12,8 +12,7 @@ import Register from "./pages/Register";
 import Checkout from "./pages/Checkout";
 import Payment from "./pages/Payment";
 import Orders from "./pages/Orders";
-import CategoryPage from "./pages/CategoryPage";
-import SearchPage from "./pages/SearchPage";
+import ProductListing from "./pages/ProductListing";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 
 function App() {
@@ -27,10 +26,8 @@ function App() {
             <Route path="/cart" element={<Cart />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-
-            {/* Category & Search — public */}
-            <Route path="/category/:name" element={<CategoryPage />} />
-            <Route path="/search" element={<SearchPage />} />
+            <Route path="/category/:categoryName" element={<ProductListing />} />
+            <Route path="/search" element={<ProductListing />} />
 
             {/* Logged-in users only */}
             <Route
@@ -67,6 +64,8 @@ function App() {
                 </AdminRoute>
               }
             />
+
+            {/* /category/:name, /product/:id will be added next */}
           </Routes>
           <Footer />
         </BrowserRouter>

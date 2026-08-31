@@ -18,10 +18,14 @@ export default function Login() {
     setError("");
     setLoading(true);
     try {
-      await login(email, password);
-      // send them back where they were headed, or home
-      const redirectTo = location.state?.from || "/";
-      navigate(redirectTo);
+      const userData = await login(email, password);
+
+      if (userData.role === "admin") {
+        navigate("/admin/dashboard");
+      } else {
+        const redirectTo = location.state?.from || "/";
+        navigate(redirectTo);
+      }
     } catch (err) {
       setError(err.response?.data?.message || "Login failed. Please try again.");
     } finally {

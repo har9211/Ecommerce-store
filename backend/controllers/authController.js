@@ -1,17 +1,28 @@
 const User = require("../models/User");
 const generateToken = require("../config/generateToken");
 
+// Defense-in-depth: even with the sanitize middleware already stripping
+// $-operators, this refuses anything that isn't a plain string outright.
+// Belt and suspenders against NoSQL injection.
+function isPlainString(value) {
+  return typeof value === "string" && value.length > 0;
+}
+
 // @route  POST /api/auth/register
 // @access Public
 const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    if (!name || !email || !password) {
+    if (!isPlainString(name) || !isPlainString(email) || !isPlainString(password)) {
       return res.status(400).json({ message: "Please fill all fields" });
     }
 
-    const userExists = await User.findOne({ email });
+    if (password.length < 6) {
+      return res.status(400).json({ message: "Password must be at least 6 characters" });
+    }
+
+    const userExists = await User.findOne({ email: email.toLowerCase().trim() });
     if (userExists) {
       return res.status(400).json({ message: "User already exists" });
     }
@@ -37,7 +48,11 @@ const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
+    if (!isPlainString(email) || !isPlainString(password)) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+
+    const user = await User.findOne({ email: email.toLowerCase().trim() });
 
     if (user && (await user.matchPassword(password))) {
       res.json({

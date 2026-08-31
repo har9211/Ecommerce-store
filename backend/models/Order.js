@@ -40,6 +40,12 @@ const orderSchema = new mongoose.Schema(
       enum: ["Placed", "Processing", "Shipped", "Delivered", "Cancelled"],
       default: "Placed",
     },
+    fulfillmentStatus: {
+      type: String,
+      enum: ["Unfulfilled", "Fulfilled"],
+      default: "Unfulfilled",
+    },
+    fulfilledAt: { type: Date },
   },
   { timestamps: true }
 );

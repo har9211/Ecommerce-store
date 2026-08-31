@@ -36,6 +36,24 @@ export default function AdminOrders() {
     }
   };
 
+  const handleFulfill = async (orderId) => {
+    setUpdatingId(orderId);
+    try {
+      const res = await api.put(`/orders/${orderId}/fulfill`);
+      setOrders((prev) =>
+        prev.map((o) =>
+          o._id === orderId
+            ? { ...o, fulfillmentStatus: res.data.fulfillmentStatus, fulfilledAt: res.data.fulfilledAt }
+            : o
+        )
+      );
+    } catch {
+      setError("Could not mark order as fulfilled.");
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
   return (
     <div>
       <div className="admin-content-header">
@@ -53,8 +71,9 @@ export default function AdminOrders() {
               <th>Customer</th>
               <th>Items</th>
               <th>Total</th>
-              <th>Payment</th>
-              <th>Status</th>
+              <th>Payment status</th>
+              <th>Fulfillment</th>
+              <th>Order status</th>
             </tr>
           </thead>
           <tbody>
@@ -69,7 +88,22 @@ export default function AdminOrders() {
                 <td>{order.orderItems.length} item(s)</td>
                 <td>₹{order.totalPrice.toLocaleString("en-IN")}</td>
                 <td>
-                  {order.paymentMethod} · {order.isPaid ? "Paid" : "Unpaid"}
+                  <span className={`pill ${order.isPaid ? "pill-green" : "pill-gray"}`}>
+                    {order.isPaid ? "Paid" : "Unpaid"}
+                  </span>
+                </td>
+                <td>
+                  {order.fulfillmentStatus === "Fulfilled" ? (
+                    <span className="pill pill-green">✓ Fulfilled</span>
+                  ) : (
+                    <button
+                      className="admin-btn-secondary fulfill-btn"
+                      disabled={updatingId === order._id}
+                      onClick={() => handleFulfill(order._id)}
+                    >
+                      Mark Fulfilled
+                    </button>
+                  )}
                 </td>
                 <td>
                   <select

@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import api from "../api/axios";
 import ProductCard from "./ProductCard";
+import ProductCardSkeleton from "./ProductCardSkeleton";
+import Reveal from "./Reveal";
 import "./FeaturedProducts.css";
 
 export default function FeaturedProducts() {
@@ -17,10 +19,11 @@ export default function FeaturedProducts() {
   }, []);
 
   return (
-    <section className="featured-section container">
-      <h2 className="section-title">Featured Products</h2>
+    <section id="featured-products" className="featured-section container">
+      <Reveal>
+        <h2 className="section-title">Featured Products</h2>
+      </Reveal>
 
-      {loading && <p className="status-text">Loading products...</p>}
       {error && <p className="status-text error">{error}</p>}
       {!loading && !error && products.length === 0 && (
         <p className="status-text">
@@ -29,11 +32,15 @@ export default function FeaturedProducts() {
       )}
 
       <div className="product-grid">
-        {products.map((product) => (
-          <div key={product._id} className="stagger-item">
-            <ProductCard product={product} />
-          </div>
-        ))}
+        {loading &&
+          Array.from({ length: 8 }).map((_, i) => <ProductCardSkeleton key={i} />)}
+
+        {!loading &&
+          products.map((product) => (
+            <div key={product._id} className="stagger-item">
+              <ProductCard product={product} />
+            </div>
+          ))}
       </div>
     </section>
   );

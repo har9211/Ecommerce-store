@@ -1,214 +1,115 @@
-/* ─── Hero section ──────────────────────────────── */
 .hero {
   position: relative;
-  overflow: hidden;
-  background: linear-gradient(135deg, #635BFF 0%, #8B5CF6 50%, #A78BFA 100%);
+  background: linear-gradient(135deg, var(--color-indigo) 0%, var(--color-indigo-light) 100%);
   color: #fff;
-  padding: 72px 0 64px;
+  padding: 64px 0;
+  overflow: hidden;
 }
 
-/* ─── Decorative blobs ──────────────────────────── */
-.hero-blob {
+.hero::before {
+  content: "";
   position: absolute;
+  top: -120px;
+  right: -80px;
+  width: 360px;
+  height: 360px;
   border-radius: 50%;
-  filter: blur(60px);
+  background: radial-gradient(circle, rgba(245, 165, 36, 0.35) 0%, rgba(245, 165, 36, 0) 70%);
   pointer-events: none;
 }
-.hero-blob-1 {
-  width: 380px; height: 380px;
-  background: rgba(255,255,255,0.08);
-  top: -100px; right: 10%;
-  animation: float 8s ease-in-out infinite;
-}
-.hero-blob-2 {
-  width: 250px; height: 250px;
-  background: rgba(245, 165, 36, 0.15);
-  bottom: -80px; left: 5%;
-  animation: float2 6s ease-in-out infinite;
-}
-.hero-blob-3 {
-  width: 200px; height: 200px;
-  background: rgba(255,255,255,0.05);
-  top: 30%; left: 40%;
-  animation: float 10s ease-in-out infinite reverse;
+
+.hero::after {
+  content: "";
+  position: absolute;
+  bottom: -160px;
+  left: 10%;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0) 70%);
+  pointer-events: none;
 }
 
-/* ─── Layout ────────────────────────────────────── */
 .hero-inner {
   position: relative;
   z-index: 1;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 48px;
+  gap: 40px;
   flex-wrap: wrap;
 }
 
-/* ─── Left text ─────────────────────────────────── */
-.hero-text { max-width: 520px; }
+.hero-text {
+  max-width: 560px;
+}
 
 .hero-eyebrow {
   display: inline-block;
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(8px);
-  color: #fff;
+  background: rgba(245, 165, 36, 0.15);
+  color: var(--color-marigold);
   font-size: 13px;
   font-weight: 600;
-  padding: 7px 16px;
+  padding: 6px 14px;
   border-radius: 999px;
-  border: 1px solid rgba(255,255,255,0.2);
-  margin-bottom: 22px;
+  margin-bottom: 20px;
 }
 
 .hero-text h1 {
-  font-size: 46px;
-  font-weight: 800;
-  line-height: 1.15;
-  margin-bottom: 18px;
-  letter-spacing: -1px;
-}
-
-.hero-highlight {
-  background: linear-gradient(90deg, #FFD700, #F5A524);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  font-size: 42px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 16px;
 }
 
 .hero-text p {
   font-size: 16px;
-  color: rgba(255,255,255,0.85);
-  margin-bottom: 32px;
-  line-height: 1.7;
-}
-
-.hero-text p strong { color: #fff; }
-
-/* ─── CTA buttons ───────────────────────────────── */
-.hero-cta-row {
-  display: flex;
-  gap: 14px;
-  flex-wrap: wrap;
+  color: #C9C6E8;
+  margin-bottom: 28px;
+  line-height: 1.6;
 }
 
 .hero-cta {
-  display: inline-block;
+  background: var(--color-marigold);
+  color: var(--color-indigo);
   font-weight: 700;
   font-size: 15px;
-  padding: 14px 30px;
+  padding: 14px 32px;
   border-radius: var(--radius-sm);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  cursor: pointer;
+  transition: background 0.15s ease;
 }
 
-.hero-cta-primary {
-  background: #F5A524;
-  color: #1A1A2E;
-  box-shadow: 0 4px 20px rgba(245,165,36,0.4);
-}
-.hero-cta-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 28px rgba(245,165,36,0.5);
-  color: #1A1A2E;
+.hero-cta:hover {
+  background: #ffb84d;
 }
 
-.hero-cta-secondary {
-  background: rgba(255,255,255,0.15);
-  color: #fff;
-  border: 1.5px solid rgba(255,255,255,0.35);
-  backdrop-filter: blur(8px);
-}
-.hero-cta-secondary:hover {
-  background: rgba(255,255,255,0.25);
-  transform: translateY(-2px);
-  color: #fff;
-}
-
-/* ─── Right panel ───────────────────────────────── */
-.hero-right {
+.hero-badge-stack {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  flex-shrink: 0;
-}
-
-.hero-card-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.hero-promo-card {
-  display: flex;
-  align-items: center;
   gap: 14px;
-  background: rgba(255,255,255,0.12);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: var(--radius);
-  padding: 14px 20px;
-  min-width: 240px;
-  transition: transform 0.2s ease, background 0.2s ease;
 }
 
-.hero-promo-card:hover {
-  background: rgba(255,255,255,0.2);
-  transform: translateX(4px);
-}
-
-.hero-promo-card-1 { animation: float  7s  ease-in-out infinite; }
-.hero-promo-card-2 { animation: float2 9s  ease-in-out infinite; }
-.hero-promo-card-3 { animation: float  11s ease-in-out infinite reverse; }
-
-.hero-promo-icon {
-  font-size: 28px;
-  width: 48px;
-  height: 48px;
-  background: rgba(255,255,255,0.15);
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.hero-promo-title {
+.hero-badge {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 12px 20px;
+  border-radius: var(--radius-sm);
   font-size: 14px;
-  font-weight: 700;
-  color: #fff;
+  font-weight: 500;
+  white-space: nowrap;
+  animation: floatY 3.5s ease-in-out infinite;
 }
 
-.hero-promo-sub {
-  font-size: 12px;
-  color: rgba(255,255,255,0.7);
-  margin-top: 2px;
+.hero-badge:nth-child(2) { animation-delay: 0.4s; }
+.hero-badge:nth-child(3) { animation-delay: 0.8s; }
+
+@keyframes floatY {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
 }
 
-/* ─── Trust badges ──────────────────────────────── */
-.hero-trust-row {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.hero-trust-badge {
-  font-size: 11px;
-  font-weight: 600;
-  color: rgba(255,255,255,0.9);
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.2);
-  padding: 5px 12px;
-  border-radius: 999px;
-}
-
-/* ─── Responsive ────────────────────────────────── */
-@media (max-width: 900px) {
-  .hero-right { display: none; }
-}
-
-@media (max-width: 640px) {
-  .hero { padding: 48px 0; }
-  .hero-text h1 { font-size: 32px; }
-  .hero-cta-row { flex-direction: column; }
-  .hero-cta { text-align: center; }
+@media (max-width: 768px) {
+  .hero-text h1 {
+    font-size: 30px;
+  }
 }

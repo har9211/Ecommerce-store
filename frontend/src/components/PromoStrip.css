@@ -1,0 +1,14 @@
+.promo-strip {
+  background: var(--color-marigold);
+  color: var(--color-indigo);
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+  padding: 7px 12px;
+  overflow: hidden;
+}
+
+.promo-message {
+  display: inline-block;
+  animation: fadeIn 0.4s ease both;
+}

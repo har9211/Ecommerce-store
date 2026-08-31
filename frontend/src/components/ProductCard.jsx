@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useCart } from "../context/CartContext";
+import { resolveImageUrl } from "../utils/image";
 import "./ProductCard.css";
 
 // Simple deterministic badge logic based on stock/price - gives cards personality
@@ -27,7 +28,7 @@ export default function ProductCard({ product }) {
       {badge && <span className={`product-badge badge-${badge.tone}`}>{badge.label}</span>}
       <div className="product-image">
         {product.image ? (
-          <img src={product.image} alt={product.name} />
+          <img src={resolveImageUrl(product.image)} alt={product.name} />
         ) : (
           <div className="product-image-placeholder">📦</div>
         )}

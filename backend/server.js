@@ -1,7 +1,9 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+const helmet = require("helmet");
 const connectDB = require("./config/db");
+const sanitizeRequest = require("./middleware/sanitize");
 
 // Connect to MongoDB Atlas
 connectDB();
@@ -9,8 +11,20 @@ connectDB();
 const app = express();
 
 // Middleware
-app.use(cors());          // allows React (different port) to call this API
-app.use(express.json());  // allows server to read JSON in request body
+app.use(helmet()); // sets secure HTTP headers (hides tech stack, blocks some attack classes)
+
+// Only allow requests from your actual frontend, not any website on the internet.
+// Falls back to the local dev URL if FRONTEND_URL isn't set in .env.
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    credentials: true,
+  })
+);
+
+app.use(express.json({ limit: "10kb" })); // caps request body size - blocks huge payload attacks
+app.use(sanitizeRequest); // strips NoSQL injection operators from body/query/params
+app.use("/uploads", express.static(require("path").join(__dirname, "uploads"))); // serves uploaded product images
 
 // Test route - confirms server + DB are alive
 app.get("/api/health", (req, res) => {
