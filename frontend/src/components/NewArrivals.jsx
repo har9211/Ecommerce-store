@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import api from "../api/axios";
 import ProductCard from "./ProductCard";
 import ProductCardSkeleton from "./ProductCardSkeleton";
@@ -23,8 +24,9 @@ export default function NewArrivals() {
 
   return (
     <section className="featured-section container">
-      <Reveal>
-        <h2 className="section-title">New Arrivals</h2>
+      <Reveal className="featured-section-header">
+        <h2 className="section-title">Recommended for You</h2>
+        <Link to="/search?sort=new" className="featured-view-all">View All</Link>
       </Reveal>
 
       <div className="product-grid">

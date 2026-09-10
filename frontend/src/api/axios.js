@@ -7,10 +7,11 @@ const api = axios.create({
   baseURL: `${SERVER_URL}/api`,
 });
 
-// Automatically attach the saved JWT token (if any) to every request.
-// This runs before each request goes out.
+// Automatically attach the active tab's JWT token (if any) to every request.
+// Authentication is intentionally kept in sessionStorage so separate tabs/users
+// do not accidentally share a token.
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
+  const token = sessionStorage.getItem("token");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }

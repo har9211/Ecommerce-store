@@ -1,4 +1,5 @@
 const Product = require("../models/Product");
+const Category = require("../models/Category");
 const { stringify } = require("csv-stringify/sync");
 const { parse } = require("csv-parse/sync");
 
@@ -15,6 +16,10 @@ const getProducts = async (req, res) => {
 
     if (req.query.keyword) {
       filter.name = { $regex: req.query.keyword, $options: "i" }; // case-insensitive search
+    }
+
+    if (req.query.deals === "1") {
+      filter.$expr = { $gt: ["$compareAtPrice", "$price"] };
     }
 
     const products = await Product.find(filter).sort({ createdAt: -1 });
@@ -46,17 +51,25 @@ const getProductById = async (req, res) => {
 // @access Private/Admin
 const createProduct = async (req, res) => {
   try {
-    const { name, description, price, category, image, stock, handle } = req.body;
+    const { name, description, price, compareAtPrice, category, image, stock, handle } = req.body;
 
-    if (!name || !description || !price || !category) {
+    if (!name || !description || price === undefined || price === null || !category) {
       return res.status(400).json({ message: "Please fill all required fields" });
     }
+
+    if (typeof category !== "string") return res.status(400).json({ message: "Choose a valid category" });
+    if (compareAtPrice !== undefined && compareAtPrice !== null && compareAtPrice !== "" && (Number.isNaN(Number(compareAtPrice)) || Number(compareAtPrice) < Number(price))) {
+      return res.status(400).json({ message: "Compare-at price must be greater than the sale price" });
+    }
+    const categoryExists = await Category.exists({ name: category.trim() });
+    if (!categoryExists) return res.status(400).json({ message: "Choose a valid category" });
 
     const product = await Product.create({
       handle,
       name,
       description,
       price,
+      compareAtPrice: compareAtPrice === "" || compareAtPrice === undefined ? null : Number(compareAtPrice),
       category,
       image,
       stock,
@@ -80,7 +93,13 @@ const updateProduct = async (req, res) => {
       return res.status(404).json({ message: "Product not found" });
     }
 
+    if (req.body.category) {
+      if (typeof req.body.category !== "string") return res.status(400).json({ message: "Choose a valid category" });
+      const categoryExists = await Category.exists({ name: req.body.category.trim() });
+      if (!categoryExists) return res.status(400).json({ message: "Choose a valid category" });
+    }
     Object.assign(product, req.body); // overwrite only the fields sent in body
+    if (product.compareAtPrice === "") product.compareAtPrice = null;
     const updatedProduct = await product.save();
 
     res.json(updatedProduct);
@@ -121,6 +140,7 @@ const exportProductsCSV = async (req, res) => {
       Name: p.name,
       Description: p.description,
       Price: p.price,
+      CompareAtPrice: p.compareAtPrice || "",
       Category: p.category,
       Image: p.image || "",
       Stock: p.stock,
@@ -159,7 +179,7 @@ const importProductsCSV = async (req, res) => {
     return res.status(400).json({ message: "Could not parse this CSV file. Check its format." });
   }
 
-  const validCategories = Product.schema.path("category").enumValues;
+  const validCategories = (await Category.find({}).select("name")).map((category) => category.name);
   let created = 0;
   let updated = 0;
   const failed = [];
@@ -172,6 +192,7 @@ const importProductsCSV = async (req, res) => {
       const name = row.Name?.trim();
       const description = row.Description?.trim();
       const price = Number(row.Price);
+      const compareAtPrice = row.CompareAtPrice?.trim() ? Number(row.CompareAtPrice) : null;
       const category = row.Category?.trim();
       const stock = Number(row.Stock);
       const image = row.Image?.trim() || "";
@@ -183,6 +204,10 @@ const importProductsCSV = async (req, res) => {
       }
       if (Number.isNaN(price) || price < 0) {
         failed.push({ row: rowNumber, reason: "Price must be a valid number" });
+        continue;
+      }
+      if (compareAtPrice !== null && (Number.isNaN(compareAtPrice) || compareAtPrice < price)) {
+        failed.push({ row: rowNumber, reason: "Compare-at price must be empty or greater than the sale price" });
         continue;
       }
       if (Number.isNaN(stock) || stock < 0) {
@@ -203,6 +228,7 @@ const importProductsCSV = async (req, res) => {
         existing.name = name;
         existing.description = description;
         existing.price = price;
+        existing.compareAtPrice = compareAtPrice;
         existing.category = category;
         existing.stock = stock;
         existing.image = image;
@@ -214,6 +240,7 @@ const importProductsCSV = async (req, res) => {
           name,
           description,
           price,
+          compareAtPrice,
           category,
           stock,
           image,

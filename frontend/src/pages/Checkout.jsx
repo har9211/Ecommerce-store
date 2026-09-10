@@ -1,20 +1,24 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
+import PhoneInput from "../components/PhoneInput";
 import api from "../api/axios";
 import "./Cart.css";
 import "./Checkout.css";
 
 export default function Checkout() {
   const { cartItems, totalPrice, clearCart } = useCart();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
-    fullName: "",
-    address: "",
-    city: "",
-    postalCode: "",
-    phone: "",
+    fullName: user?.name || "",
+    address: user?.address?.line1 || "",
+    city: user?.address?.city || "",
+    state: user?.address?.state || "",
+    postalCode: user?.address?.postalCode || "",
+    phone: user?.phone || "",
   });
   const [paymentMethod, setPaymentMethod] = useState("COD");
   const [error, setError] = useState("");
@@ -24,7 +28,17 @@ export default function Checkout() {
   const grandTotal = totalPrice + deliveryPrice;
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
+    if (name === "postalCode" && /^\d{6}$/.test(value)) {
+      fetch(`https://api.postalpincode.in/pincode/${value}`)
+        .then((response) => response.json())
+        .then(([result]) => {
+          const office = result?.Status === "Success" ? result.PostOffice?.[0] : null;
+          if (office) setForm((previous) => ({ ...previous, postalCode: value, city: office.District || office.Block || "", state: office.State || "" }));
+        })
+        .catch(() => {});
+    }
   };
 
   const handlePlaceOrder = async (e) => {
@@ -38,6 +52,12 @@ export default function Checkout() {
 
     setLoading(true);
     try {
+      const normalizedPhone = form.phone.replace(/[\s()-]/g, "");
+      if (!/^\+\d{1,3}\d{10}$/.test(normalizedPhone)) {
+        setError("Choose a country code and enter exactly 10 mobile digits.");
+        setLoading(false);
+        return;
+      }
       const orderItems = cartItems.map((item) => ({
         product: item._id,
         name: item.name,
@@ -48,7 +68,7 @@ export default function Checkout() {
 
       const res = await api.post("/orders", {
         orderItems,
-        shippingAddress: form,
+        shippingAddress: { ...form, phone: normalizedPhone },
         paymentMethod,
         itemsPrice: totalPrice,
         deliveryPrice,
@@ -91,23 +111,28 @@ export default function Checkout() {
 
           <label>
             Full Name
-            <input name="fullName" value={form.fullName} onChange={handleChange} required />
+            <input name="fullName" autoComplete="name" value={form.fullName} onChange={handleChange} required />
           </label>
 
           <label>
             Address
-            <input name="address" value={form.address} onChange={handleChange} required />
+            <input name="address" autoComplete="street-address" value={form.address} onChange={handleChange} required />
           </label>
 
           <div className="form-row">
             <label>
               City
-              <input name="city" value={form.city} onChange={handleChange} required />
+              <input name="city" autoComplete="address-level2" value={form.city} onChange={handleChange} required />
+            </label>
+            <label>
+              State
+              <input name="state" autoComplete="address-level1" value={form.state} onChange={handleChange} required />
             </label>
             <label>
               Postal Code
               <input
                 name="postalCode"
+                autoComplete="postal-code"
                 value={form.postalCode}
                 onChange={handleChange}
                 required
@@ -117,7 +142,7 @@ export default function Checkout() {
 
           <label>
             Phone Number
-            <input name="phone" value={form.phone} onChange={handleChange} required />
+            <PhoneInput value={form.phone} required onChange={(value) => setForm((previous) => ({ ...previous, phone: value }))} />
           </label>
 
           <h3 className="payment-heading">Payment Method</h3>

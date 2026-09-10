@@ -1,9 +1,12 @@
 .hero {
   position: relative;
-  background: linear-gradient(135deg, var(--color-indigo) 0%, var(--color-indigo-light) 100%);
+  background: linear-gradient(135deg, var(--color-indigo) 0%, var(--color-marigold) 100%);
   color: #fff;
-  padding: 64px 0;
+  padding: 48px 0;
   overflow: hidden;
+  border-radius: 20px;
+  margin: 24px 24px 0;
+  width: auto;
 }
 
 .hero::before {
@@ -14,7 +17,7 @@
   width: 360px;
   height: 360px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(245, 165, 36, 0.35) 0%, rgba(245, 165, 36, 0) 70%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 70%);
   pointer-events: none;
 }
 
@@ -46,8 +49,8 @@
 
 .hero-eyebrow {
   display: inline-block;
-  background: rgba(245, 165, 36, 0.15);
-  color: var(--color-marigold);
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
   font-size: 13px;
   font-weight: 600;
   padding: 6px 14px;
@@ -70,17 +73,17 @@
 }
 
 .hero-cta {
-  background: var(--color-marigold);
-  color: var(--color-indigo);
+  background: #fff;
+  color: var(--color-marigold-dark);
   font-weight: 700;
   font-size: 15px;
   padding: 14px 32px;
-  border-radius: var(--radius-sm);
-  transition: background 0.15s ease;
+  border-radius: 999px;
+  transition: transform 0.15s ease;
 }
 
 .hero-cta:hover {
-  background: #ffb84d;
+  transform: translateY(-1px);
 }
 
 .hero-badge-stack {

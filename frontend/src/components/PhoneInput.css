@@ -1,0 +1,6 @@
+.phone-input { display: flex; gap: 8px; }
+.phone-input select, .phone-input input { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-sm); color: var(--color-text); font: 400 14px var(--font-body); min-height: 42px; outline: none; padding: 10px 12px; }
+.phone-input select { flex: 0 0 145px; }
+.phone-input input { flex: 1; min-width: 0; }
+.phone-input select:focus, .phone-input input:focus { border-color: var(--color-marigold); }
+@media (max-width: 560px) { .phone-input select { flex-basis: 132px; font-size: 12px; padding-left: 8px; padding-right: 4px; } }

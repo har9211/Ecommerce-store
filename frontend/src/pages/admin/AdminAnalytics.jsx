@@ -31,15 +31,11 @@ export default function AdminAnalytics() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    Promise.all([
-      api.get("/orders/stats/summary"),
-      api.get("/products"),
-      api.get("/auth/users"),
-    ])
-      .then(([summaryRes, productsRes, usersRes]) => {
+    api.get("/orders/stats/summary")
+      .then((summaryRes) => {
         setData(summaryRes.data);
-        setProductCount(productsRes.data.length);
-        setCustomerCount(usersRes.data.length);
+        setProductCount(summaryRes.data.productCount || 0);
+        setCustomerCount(summaryRes.data.customerCount || 0);
       })
       .catch(() => setError("Could not load analytics."))
       .finally(() => setLoading(false));

@@ -10,30 +10,44 @@ export function useAuth() {
 export function AuthProvider({ children }) {
   // Load saved user on first render, so a page refresh doesn't log you out.
   const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem("user");
+    const saved = sessionStorage.getItem("user");
     return saved ? JSON.parse(saved) : null;
   });
 
   const login = async (email, password) => {
     const res = await api.post("/auth/login", { email, password });
-    localStorage.setItem("token", res.data.token);
-    localStorage.setItem("user", JSON.stringify(res.data));
+    sessionStorage.setItem("token", res.data.token);
+    sessionStorage.setItem("user", JSON.stringify(res.data));
     setUser(res.data);
     return res.data;
   };
 
   const register = async (name, email, password) => {
     const res = await api.post("/auth/register", { name, email, password });
-    localStorage.setItem("token", res.data.token);
-    localStorage.setItem("user", JSON.stringify(res.data));
+    sessionStorage.setItem("token", res.data.token);
+    sessionStorage.setItem("user", JSON.stringify(res.data));
+    setUser(res.data);
+    return res.data;
+  };
+
+  const updateProfile = async (details) => {
+    const res = await api.put("/auth/me", details);
+    sessionStorage.setItem("token", res.data.token);
+    sessionStorage.setItem("user", JSON.stringify(res.data));
     setUser(res.data);
     return res.data;
   };
 
   const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("user");
     setUser(null);
+  };
+
+  const setSession = (data) => {
+    sessionStorage.setItem("token", data.token);
+    sessionStorage.setItem("user", JSON.stringify(data));
+    setUser(data);
   };
 
   const value = {
@@ -42,6 +56,8 @@ export function AuthProvider({ children }) {
     isAdmin: user?.role === "admin",
     login,
     register,
+    updateProfile,
+    setSession,
     logout,
   };
 

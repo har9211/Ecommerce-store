@@ -88,5 +88,14 @@
 @media (max-width: 768px) {
   .footer-grid {
     grid-template-columns: 1fr 1fr;
+    gap: 28px 20px;
+    padding: 36px 20px;
   }
+}
+
+@media (max-width: 480px) {
+  .footer-grid { grid-template-columns: 1fr; padding: 32px 16px; }
+  .newsletter-row { flex-direction: column; border-radius: 0; gap: 8px; overflow: visible; }
+  .newsletter-row input, .newsletter-row button { border-radius: var(--radius-sm); min-height: 42px; }
+  .footer-bottom { padding: 16px; line-height: 1.5; }
 }

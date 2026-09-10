@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import "./Auth.css";
@@ -9,9 +9,13 @@ export default function Login() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const { login } = useAuth();
+  const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+
+  useEffect(() => {
+    if (isAuthenticated) navigate(location.state?.from || "/", { replace: true });
+  }, [isAuthenticated, location.state, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -46,7 +50,10 @@ export default function Login() {
           <input
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => setEmail(e.target.value.toLowerCase())}
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck="false"
             required
           />
         </label>
@@ -61,6 +68,8 @@ export default function Login() {
             minLength={6}
           />
         </label>
+
+        <p className="auth-forgot"><Link to="/forgot-password">Forgot your password?</Link></p>
 
         <button type="submit" className="auth-submit" disabled={loading}>
           {loading ? "Logging in..." : "Log In"}

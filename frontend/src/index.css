@@ -1,28 +1,33 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap');
 
 :root {
-  /* Color tokens */
-  --color-indigo: #1E1B4B;      /* header, nav, footer - authority */
-  --color-indigo-light: #322C7D;
-  --color-marigold: #F5A524;    /* primary accent - CTAs, badges, prices */
-  --color-marigold-dark: #D4890F;
-  --color-bg: #FBF9F6;          /* warm off-white page background */
+  /* Color tokens - NovaShop purple theme */
+  --color-indigo: #6D28D9;      /* primary brand - sidebar active, headings, authority */
+  --color-indigo-light: #8B5CF6;
+  --color-marigold: #7C3AED;    /* primary accent - CTAs, badges, prices, buttons */
+  --color-marigold-dark: #5B21B6;
+  --color-bg: #F5F4FB;          /* soft lavender page background */
   --color-surface: #FFFFFF;     /* card backgrounds */
-  --color-text: #211D3D;
-  --color-text-muted: #6B6880;
-  --color-border: #ECE8E0;
-  --color-success: #2E9E5B;
+  --color-text: #201A34;
+  --color-text-muted: #8B87A0;
+  --color-border: #ECE9F7;
+  --color-success: #16A34A;
+  --color-danger: #EF4444;
 
   /* Type */
   --font-display: 'Poppins', sans-serif;
   --font-body: 'Inter', sans-serif;
 
   /* Layout */
-  --radius: 12px;
-  --radius-sm: 8px;
-  --shadow-card: 0 2px 10px rgba(30, 27, 75, 0.06);
-  --shadow-card-hover: 0 8px 24px rgba(30, 27, 75, 0.12);
+  --radius: 14px;
+  --radius-sm: 10px;
+  --shadow-card: 0 2px 10px rgba(76, 29, 149, 0.06);
+  --shadow-card-hover: 0 10px 26px rgba(76, 29, 149, 0.14);
   --max-width: 1200px;
+
+  /* App shell */
+  --sidebar-width: 240px;
+  --cartpanel-width: 320px;
 }
 
 * {
@@ -79,6 +84,68 @@ img {
   max-width: var(--max-width);
   margin: 0 auto;
   padding: 0 24px;
+}
+
+/* App shell: left nav / main content / right cart panel */
+.app-shell {
+  display: grid;
+  grid-template-columns: var(--sidebar-width) 1fr;
+  min-height: 100vh;
+  background: var(--color-bg);
+}
+
+.app-shell.sidebar-closed { grid-template-columns: 1fr; }
+.app-shell.sidebar-closed.has-cart-panel { grid-template-columns: 1fr var(--cartpanel-width); }
+.app-shell.has-sidebar.cart-closed { grid-template-columns: var(--sidebar-width) 1fr; }
+.app-shell.has-sidebar.has-cart-panel { grid-template-columns: var(--sidebar-width) 1fr var(--cartpanel-width); }
+.app-shell.has-sidebar .sidebar { display: block; }
+.app-shell.sidebar-closed .sidebar { display: none; }
+.app-shell.cart-closed .cart-panel { display: none; }
+.drawer-backdrop { background: rgba(32, 26, 52, .32); display: block; inset: 0; position: fixed; z-index: 55; }
+
+.app-main {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-main-content {
+  width: 100%;
+  min-width: 0;
+  flex: 1;
+}
+
+@media (max-width: 1180px) {
+  .app-shell.has-sidebar.has-cart-panel,
+  .app-shell.has-sidebar.cart-closed,
+  .app-shell.sidebar-closed.has-cart-panel,
+  .app-shell.sidebar-closed.cart-closed {
+    grid-template-columns: 1fr;
+  }
+  .cart-panel {
+    background: var(--color-surface);
+    display: block;
+    height: 100vh;
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: min(var(--cartpanel-width), 92vw);
+    z-index: 60;
+  }
+}
+
+@media (max-width: 860px) {
+  .app-shell,
+  .app-shell.has-cart-panel {
+    grid-template-columns: 1fr;
+  }
+  .app-shell, .app-shell.has-sidebar, .app-shell.has-cart-panel, .app-shell.sidebar-closed.has-cart-panel, .app-shell.has-sidebar.cart-closed { grid-template-columns: 1fr; }
+  .sidebar { display: none !important; position: fixed; inset: 0 auto 0 0; width: min(300px, 84vw); z-index: 60; box-shadow: 12px 0 28px rgba(32, 26, 52, .16); }
+  .app-shell.has-sidebar .sidebar.sidebar-open { display: block !important; }
+  .cart-panel { display: none !important; position: fixed; inset: 0 0 0 auto; width: min(340px, 92vw); z-index: 60; box-shadow: -12px 0 28px rgba(32, 26, 52, .16); }
+  .app-shell.has-cart-panel .cart-panel { display: block !important; }
+  .drawer-backdrop { display: block; }
 }
 
 :focus-visible {

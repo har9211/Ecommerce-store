@@ -1,4 +1,6 @@
 const Order = require("../models/Order");
+const Product = require("../models/Product");
+const User = require("../models/User");
 
 // @route  POST /api/orders
 // @desc   Create a new order from the cart
@@ -142,6 +144,10 @@ const fulfillOrder = async (req, res) => {
 const getAnalyticsSummary = async (req, res) => {
   try {
     const orders = await Order.find({});
+    const [productCount, customerCount] = await Promise.all([
+      Product.countDocuments({}),
+      User.countDocuments({ role: "customer" }),
+    ]);
 
     const totalRevenue = orders
       .filter((o) => o.isPaid || o.paymentMethod === "COD")
@@ -175,6 +181,8 @@ const getAnalyticsSummary = async (req, res) => {
       totalOrders,
       ordersByStatus,
       revenueByDay,
+      productCount,
+      customerCount,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });

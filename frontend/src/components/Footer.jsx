@@ -1,7 +1,9 @@
 import { useState } from "react";
 import "./Footer.css";
-
+import { Link } from "react-router-dom";
+import useCategories from "../hooks/useCategories";
 export default function Footer() {
+  const { categories } = useCategories();
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
   const [error, setError] = useState("");
@@ -38,20 +40,18 @@ export default function Footer() {
         <div>
           <h4>Shop</h4>
           <ul>
-            <li>Electronics</li>
-            <li>Home & Kitchen</li>
-            <li>Fashion</li>
-            <li>Health Care</li>
+            {categories.slice(0, 6).map((category) => <li key={category._id}><Link to={`/category/${encodeURIComponent(category.name)}`}>{category.name}</Link></li>)}
+            {categories.length === 0 && <li><Link to="/category/all">All products</Link></li>}
           </ul>
         </div>
 
         <div>
           <h4>Support</h4>
           <ul>
-            <li>Contact Us</li>
-            <li>Shipping Policy</li>
-            <li>Returns & Replacement</li>
-            <li>FAQs</li>
+            <li><Link to="/contact">Contact Us</Link></li>
+            <li><Link to="/shipping">Shipping Policy</Link></li>
+            <li><Link to="/returns">Returns & Replacement</Link></li>
+            <li><Link to="/faqs">FAQs</Link></li>
           </ul>
         </div>
 

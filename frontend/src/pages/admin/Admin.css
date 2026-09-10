@@ -3,6 +3,10 @@
   min-height: 60vh;
 }
 
+.admin-only-shell { min-height: 100vh; background: var(--color-bg); padding: 1px 0; }
+.admin-page-header { align-items: flex-start; display: flex; justify-content: space-between; gap: 16px; }
+.admin-page-header .section-title { flex: 1; }
+
 .admin-layout {
   display: grid;
   grid-template-columns: 200px 1fr;
@@ -231,6 +235,15 @@
   color: #D64545;
 }
 
+.admin-category-help { color: var(--color-text-muted); font-size: 13px; line-height: 1.6; margin: -6px 0 18px; }
+.admin-category-create { display: flex; gap: 10px; margin-bottom: 18px; }
+.admin-category-create input { border: 1px solid var(--color-border); border-radius: var(--radius-sm); flex: 1; font: 400 13px var(--font-body); outline: none; padding: 10px 12px; }
+.admin-category-create input:focus { border-color: var(--color-marigold); }
+.admin-category-list { border: 1px solid var(--color-border); border-radius: var(--radius-sm); overflow: hidden; }
+.admin-category-row { align-items: center; border-bottom: 1px solid var(--color-border); display: flex; font-size: 13px; justify-content: space-between; padding: 13px 14px; }
+.admin-category-row:last-child { border-bottom: 0; }
+.admin-category-row button { background: none; color: #D64545; font-size: 12px; font-weight: 600; }
+
 .upload-hint {
   font-size: 11px;
   color: var(--color-marigold-dark);
@@ -373,3 +386,5 @@
     position: static;
   }
 }
+
+@media (max-width: 480px) { .admin-category-create { align-items: stretch; flex-direction: column; } }

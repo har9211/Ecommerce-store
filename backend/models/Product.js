@@ -27,18 +27,15 @@ const productSchema = new mongoose.Schema(
       required: [true, "Price is required"],
       min: 0,
     },
+    compareAtPrice: {
+      type: Number,
+      min: 0,
+      default: null,
+    },
     category: {
       type: String,
       required: [true, "Category is required"],
-      enum: [
-        "Electronics",
-        "Home & Kitchen",
-        "Fashion",
-        "Health Care",
-        "Accessories",
-        "Beauty",
-        "Other",
-      ],
+      trim: true,
     },
     image: {
       type: String, // URL to image (Cloudinary etc. later)

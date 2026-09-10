@@ -1,0 +1,77 @@
+.promo-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  padding: 20px 24px 0;
+}
+
+.promo-card {
+  border-radius: var(--radius);
+  padding: 18px 18px 20px;
+  min-height: 108px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.15s ease;
+}
+
+.promo-card:hover {
+  transform: translateY(-2px);
+}
+
+.promo-card-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.85;
+}
+
+.promo-card h4 {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  margin: 2px 0;
+}
+
+.promo-card p {
+  font-size: 12.5px;
+  font-weight: 600;
+  margin: 0;
+  opacity: 0.9;
+}
+
+.promo-flash {
+  background: linear-gradient(135deg, #FDE1E7, #FBCFE8);
+  color: #9D174D;
+}
+
+.promo-shipping {
+  background: linear-gradient(135deg, #DCFCE7, #D1FAE5);
+  color: #166534;
+}
+
+.promo-arrivals {
+  background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+  color: #92400E;
+}
+
+.promo-card-timer {
+  position: absolute;
+  right: 16px;
+  bottom: 14px;
+  background: rgba(255, 255, 255, 0.6);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 999px;
+}
+
+@media (max-width: 700px) {
+  .promo-cards {
+    grid-template-columns: 1fr;
+  }
+}

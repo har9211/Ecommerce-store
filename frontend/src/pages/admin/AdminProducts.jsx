@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../../api/axios";
 import { resolveImageUrl } from "../../utils/image";
+import useCategories from "../../hooks/useCategories";
 import "../Auth.css";
 import "../Checkout.css";
 import "../../components/FeaturedProducts.css";
@@ -10,22 +11,14 @@ const emptyForm = {
   name: "",
   description: "",
   price: "",
-  category: "Electronics",
+  compareAtPrice: "",
+  category: "",
   image: "",
   stock: "",
 };
 
-const categories = [
-  "Electronics",
-  "Home & Kitchen",
-  "Fashion",
-  "Health Care",
-  "Accessories",
-  "Beauty",
-  "Other",
-];
-
 export default function AdminProducts() {
+  const { categories } = useCategories();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -75,7 +68,7 @@ export default function AdminProducts() {
   };
 
   const openAddForm = () => {
-    setForm(emptyForm);
+    setForm({ ...emptyForm, category: categories[0]?.name || "" });
     setEditingId(null);
     setShowForm(true);
   };
@@ -85,6 +78,7 @@ export default function AdminProducts() {
       name: product.name,
       description: product.description,
       price: product.price,
+      compareAtPrice: product.compareAtPrice || "",
       category: product.category,
       image: product.image || "",
       stock: product.stock,
@@ -101,6 +95,7 @@ export default function AdminProducts() {
     const payload = {
       ...form,
       price: Number(form.price),
+      compareAtPrice: form.compareAtPrice === "" ? null : Number(form.compareAtPrice),
       stock: Number(form.stock),
     };
 
@@ -262,6 +257,10 @@ export default function AdminProducts() {
               />
             </label>
             <label>
+              Compare-at price (₹)
+              <input name="compareAtPrice" type="number" min={form.price || "0"} value={form.compareAtPrice} onChange={handleChange} placeholder="Optional" />
+            </label>
+            <label>
               Stock
               <input
                 name="stock"
@@ -277,10 +276,11 @@ export default function AdminProducts() {
           <div className="form-row">
             <label>
               Category
-              <select name="category" value={form.category} onChange={handleChange}>
-                {categories.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
+              <select name="category" value={form.category} onChange={handleChange} required disabled={categories.length === 0}>
+                {categories.length === 0 && <option value="">Create a category first</option>}
+                {categories.map((category) => (
+                  <option key={category._id} value={category.name}>
+                    {category.name}
                   </option>
                 ))}
               </select>

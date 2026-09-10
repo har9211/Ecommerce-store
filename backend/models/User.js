@@ -25,6 +25,22 @@ const userSchema = new mongoose.Schema(
       enum: ["customer", "admin"],
       default: "customer",
     },
+    phone: {
+      type: String,
+      trim: true,
+      default: "",
+      maxlength: 20,
+    },
+    address: {
+      line1: { type: String, trim: true, default: "" },
+      line2: { type: String, trim: true, default: "" },
+      city: { type: String, trim: true, default: "" },
+      state: { type: String, trim: true, default: "" },
+      postalCode: { type: String, trim: true, default: "" },
+      country: { type: String, trim: true, default: "India" },
+    },
+    passwordResetToken: { type: String, default: null },
+    passwordResetExpires: { type: Date, default: null },
   },
   { timestamps: true } // adds createdAt, updatedAt automatically
 );

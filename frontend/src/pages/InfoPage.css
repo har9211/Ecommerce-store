@@ -1,0 +1,5 @@
+.info-page { min-height: 60vh; padding: 40px 24px 64px; }
+.info-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius); box-shadow: var(--shadow-card); max-width: 680px; padding: 32px; }
+.info-card p { color: var(--color-text-muted); font-size: 14px; line-height: 1.7; margin: 0 0 24px; }
+.info-action { background: var(--color-indigo); border-radius: var(--radius-sm); color: #fff; display: inline-block; font-size: 13px; font-weight: 700; padding: 11px 18px; }
+@media (max-width: 560px) { .info-page { padding: 28px 16px 48px; } .info-card { padding: 22px; } }

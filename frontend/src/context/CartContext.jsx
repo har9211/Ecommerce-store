@@ -1,4 +1,5 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { useAuth } from "./AuthContext";
 
 const CartContext = createContext();
 
@@ -9,17 +10,34 @@ export function useCart() {
 }
 
 export function CartProvider({ children }) {
-  // Load any saved cart from localStorage on first render, so a page
-  // refresh doesn't wipe it out. Falls back to an empty array.
+  const { user } = useAuth();
+  const cartKey = user?._id ? `cart:${user._id}` : "cart:guest";
+  const activeKey = useRef(cartKey);
+  const skipWrite = useRef(true);
   const [cartItems, setCartItems] = useState(() => {
-    const saved = localStorage.getItem("cartItems");
+    const initialUser = JSON.parse(sessionStorage.getItem("user") || "null");
+    const initialKey = initialUser?._id ? `cart:${initialUser._id}` : "cart:guest";
+    const saved = localStorage.getItem(initialKey);
     return saved ? JSON.parse(saved) : [];
   });
 
-  // Whenever cartItems changes, save it back to localStorage.
+  // Each signed-in user gets an isolated cart. Load their cart when the
+  // identity changes, then save only after that load has completed.
   useEffect(() => {
-    localStorage.setItem("cartItems", JSON.stringify(cartItems));
-  }, [cartItems]);
+    if (activeKey.current === cartKey) return;
+    activeKey.current = cartKey;
+    skipWrite.current = true;
+    const saved = localStorage.getItem(cartKey);
+    setCartItems(saved ? JSON.parse(saved) : []);
+  }, [cartKey]);
+
+  useEffect(() => {
+    if (skipWrite.current) {
+      skipWrite.current = false;
+      return;
+    }
+    localStorage.setItem(cartKey, JSON.stringify(cartItems));
+  }, [cartItems, cartKey]);
 
   const addToCart = (product) => {
     setCartItems((prev) => {
