@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 // A snapshot of each product at the time of order - so if the product's
 // price/name changes later, past orders still show what was actually bought.
 const orderItemSchema = new mongoose.Schema({
-  product: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
+  product: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: false },
   name: { type: String, required: true },
   image: { type: String },
   price: { type: Number, required: true },
@@ -29,7 +29,7 @@ const orderSchema = new mongoose.Schema(
     },
     paymentMethod: {
       type: String,
-      enum: ["COD", "Card"],
+      enum: ["COD"],
       required: true,
     },
     itemsPrice: { type: Number, required: true },

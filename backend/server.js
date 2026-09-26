@@ -5,8 +5,12 @@ const helmet = require("helmet");
 const connectDB = require("./config/db");
 const sanitizeRequest = require("./middleware/sanitize");
 
-// Connect to MongoDB Atlas
-connectDB();
+function validateStartupConfig() {
+  const secret = process.env.JWT_SECRET || "";
+  if (secret.length < 32 || /replace_this|change_me|secret/i.test(secret)) {
+    throw new Error("JWT_SECRET must be a unique, cryptographically random value of at least 32 characters.");
+  }
+}
 
 const app = express();
 
@@ -48,6 +52,16 @@ app.use("/api/categories", require("./routes/categoryRoutes"));
 app.use("/api/orders", require("./routes/orderRoutes"));
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+
+async function startServer() {
+  validateStartupConfig();
+  await connectDB();
+  app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+  });
+}
+
+startServer().catch((error) => {
+  console.error(`Server startup failed: ${error.message}`);
+  process.exit(1);
 });

@@ -4,6 +4,7 @@ import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import PhoneInput from "../components/PhoneInput";
 import api from "../api/axios";
+import { calculateDeliveryPrice } from "../constants/commerce";
 import "./Cart.css";
 import "./Checkout.css";
 
@@ -24,7 +25,7 @@ export default function Checkout() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const deliveryPrice = totalPrice >= 999 ? 0 : 49;
+  const deliveryPrice = calculateDeliveryPrice(totalPrice);
   const grandTotal = totalPrice + deliveryPrice;
 
   const handleChange = (e) => {
@@ -58,32 +59,17 @@ export default function Checkout() {
         setLoading(false);
         return;
       }
-      const orderItems = cartItems.map((item) => ({
-        product: item._id,
-        name: item.name,
-        image: item.image,
-        price: item.price,
-        quantity: item.quantity,
-      }));
+      const orderItems = cartItems.map((item) => ({ product: item._id, quantity: item.quantity }));
 
-      const res = await api.post("/orders", {
+      await api.post("/orders", {
         orderItems,
         shippingAddress: { ...form, phone: normalizedPhone },
         paymentMethod,
-        itemsPrice: totalPrice,
-        deliveryPrice,
-        totalPrice: grandTotal,
       });
 
       clearCart();
 
-      if (paymentMethod === "COD") {
-        // Cash on delivery - order is placed, nothing to pay online now
-        navigate(`/orders`, { state: { justPlaced: true } });
-      } else {
-        // Card - send them to the payment page to complete payment
-        navigate(`/payment/${res.data._id}`);
-      }
+      navigate("/orders", { state: { justPlaced: true } });
     } catch (err) {
       setError(err.response?.data?.message || "Could not place order. Try again.");
     } finally {
@@ -157,16 +143,6 @@ export default function Checkout() {
               />
               💵 Cash on Delivery
             </label>
-            <label className={`payment-option ${paymentMethod === "Card" ? "selected" : ""}`}>
-              <input
-                type="radio"
-                name="paymentMethod"
-                value="Card"
-                checked={paymentMethod === "Card"}
-                onChange={() => setPaymentMethod("Card")}
-              />
-              💳 Card / Online Payment
-            </label>
           </div>
         </div>
 
@@ -193,11 +169,7 @@ export default function Checkout() {
             <span>₹{grandTotal.toLocaleString("en-IN")}</span>
           </div>
           <button type="submit" className="checkout-btn" disabled={loading}>
-            {loading
-              ? "Placing order..."
-              : paymentMethod === "COD"
-              ? "Place Order"
-              : "Continue to Payment"}
+            {loading ? "Placing order..." : "Place Order"}
           </button>
         </div>
       </form>

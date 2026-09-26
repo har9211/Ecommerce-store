@@ -35,7 +35,8 @@ export default function ProductListing() {
   }, [categoryName, keyword, deals]);
 
   const displayedProducts = [...products].sort((a, b) => {
-    if (sort === "best") return b.stock - a.stock;
+    if (sort === "new") return new Date(b.createdAt) - new Date(a.createdAt);
+    if (sort === "best") return (b.unitsSold || 0) - (a.unitsSold || 0);
     if (deals) return a.price - b.price;
     return 0;
   });

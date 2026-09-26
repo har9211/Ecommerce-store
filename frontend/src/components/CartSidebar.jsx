@@ -1,18 +1,17 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { resolveImageUrl } from "../utils/image";
+import { calculateDeliveryPrice } from "../constants/commerce";
 import "./CartSidebar.css";
 
 export default function CartSidebar({ onClose }) {
   const { cartItems, updateQuantity, removeFromCart, totalItems, totalPrice } = useCart();
   const { isAuthenticated } = useAuth();
-  const [promo, setPromo] = useState("");
   const navigate = useNavigate();
 
-  const shippingFree = totalPrice >= 999 || totalPrice === 0;
-  const shipping = shippingFree ? 0 : 99;
+  const shipping = totalPrice === 0 ? 0 : calculateDeliveryPrice(totalPrice);
+  const shippingFree = shipping === 0;
   const total = totalPrice + shipping;
 
   const handleCheckout = () => {
@@ -67,16 +66,6 @@ export default function CartSidebar({ onClose }) {
             ))}
           </div>
         )}
-
-        <div className="cart-panel-promo">
-          <input
-            type="text"
-            placeholder="Promo Code"
-            value={promo}
-            onChange={(e) => setPromo(e.target.value)}
-          />
-          <button>Apply</button>
-        </div>
 
         <div className="cart-panel-summary">
           <div className="cart-panel-summary-row">

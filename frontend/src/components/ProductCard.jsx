@@ -10,17 +10,8 @@ function getDiscount(product) {
   return Math.round(((product.compareAtPrice - product.price) / product.compareAtPrice) * 100);
 }
 
-function getRating(product) {
-  const seed = product.name.length + (product._id?.charCodeAt(2) || 0);
-  return {
-    stars: (3.6 + (seed % 14) / 10).toFixed(1),
-    count: 20 + (seed % 400),
-  };
-}
-
 export default function ProductCard({ product }) {
   const discount = getDiscount(product);
-  const rating = getRating(product);
   const { addToCart } = useCart();
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
@@ -37,26 +28,21 @@ export default function ProductCard({ product }) {
   };
 
   const original = product.compareAtPrice > product.price ? product.compareAtPrice : null;
+  const openProduct = () => navigate(`/product/${product._id}`);
 
   return (
     <div className="product-card">
-      <div className="product-image">
+      <button className="product-image" onClick={openProduct} aria-label={`View ${product.name}`}>
         {discount && <span className="product-discount-badge">-{discount}%</span>}
         {product.image ? (
           <img src={resolveImageUrl(product.image)} alt={product.name} />
         ) : (
           <div className="product-image-placeholder">📦</div>
         )}
-      </div>
+      </button>
       <div className="product-info">
-        <h3 className="product-name">{product.name}</h3>
+        <h3 className="product-name"><button onClick={openProduct}>{product.name}</button></h3>
         <span className="product-category">{product.category}</span>
-
-        <div className="product-rating-row">
-          <span className="product-rating-star">★</span>
-          <span>{rating.stars}</span>
-          <span className="product-rating-count">({rating.count})</span>
-        </div>
 
         <div className="product-price-row">
           <span className="product-price">₹{product.price.toLocaleString("en-IN")}</span>

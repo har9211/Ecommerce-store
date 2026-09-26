@@ -22,6 +22,7 @@ import Account from "./pages/Account";
 import InfoPage from "./pages/InfoPage";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import ProductDetail from "./pages/ProductDetail";
 import { useAuth } from "./context/AuthContext";
 
 // Routes where the persistent right-hand cart panel doesn't make sense
@@ -82,6 +83,7 @@ function AppShell() {
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/category/:categoryName" element={<CategoryPage />} />
             <Route path="/search" element={<ProductListing />} />
+            <Route path="/product/:id" element={<ProductDetail />} />
             <Route path="/coupons" element={<InfoPage />} />
             <Route path="/notifications" element={<InfoPage />} />
             <Route path="/contact" element={<InfoPage />} />

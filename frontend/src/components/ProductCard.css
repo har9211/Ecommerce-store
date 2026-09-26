@@ -21,6 +21,8 @@
   justify-content: center;
   overflow: hidden;
 }
+.product-image { border: 0; width: 100%; padding: 0; cursor: pointer; }
+.product-name button { appearance: none; border: 0; background: transparent; padding: 0; font: inherit; color: inherit; text-align: left; cursor: pointer; }
 
 .product-image img {
   width: 100%;
@@ -70,24 +72,6 @@
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
-}
-
-.product-rating-row {
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  font-size: 11.5px;
-  color: var(--color-text-muted);
-  margin: 6px 0;
-}
-
-.product-rating-star {
-  color: #F59E0B;
-  font-size: 12px;
-}
-
-.product-rating-count {
-  color: var(--color-text-muted);
 }
 
 .product-price-row {

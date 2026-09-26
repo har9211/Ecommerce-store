@@ -2,6 +2,12 @@ const User = require("../models/User");
 const generateToken = require("../config/generateToken");
 const crypto = require("crypto");
 
+const RESET_TOKEN_TTL_MS = 15 * 60 * 1000;
+
+function hashResetToken(token) {
+  return crypto.createHash("sha256").update(token).digest("hex");
+}
+
 // Defense-in-depth: even with the sanitize middleware already stripping
 // $-operators, this refuses anything that isn't a plain string outright.
 // Belt and suspenders against NoSQL injection.
@@ -139,11 +145,21 @@ const forgotPassword = async (req, res) => {
     const user = await User.findOne({ email });
     // Keep the response generic so the endpoint cannot be used to enumerate accounts.
     if (!user) return res.json({ message: "If that email exists, a reset link has been created." });
-    user.passwordResetToken = crypto.randomBytes(32).toString("hex");
-    user.passwordResetExpires = new Date(Date.now() + 15 * 60 * 1000);
+    // The browser must never receive a password-reset credential. Keep only a
+    // hash in the database so a database leak cannot be used to reset accounts.
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    user.passwordResetToken = hashResetToken(resetToken);
+    user.passwordResetExpires = new Date(Date.now() + RESET_TOKEN_TTL_MS);
     await user.save();
-    // This project has no email provider configured. Return a short-lived token for the local app.
-    res.json({ message: "Reset link created.", resetToken: user.passwordResetToken });
+
+    // A reset link is deliberately not returned by this API. Configure the
+    // application's email provider to deliver the raw token to the account's
+    // verified email address. Logging it is allowed only in local development.
+    if (process.env.NODE_ENV === "development") {
+      const baseUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+      console.info(`Password reset link for ${user.email}: ${baseUrl}/reset-password?token=${resetToken}`);
+    }
+    res.json({ message: "If that email exists, password reset instructions have been sent." });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -155,7 +171,10 @@ const resetPassword = async (req, res) => {
     if (typeof token !== "string" || typeof password !== "string" || password.length < 6) {
       return res.status(400).json({ message: "A valid reset token and 6-character password are required" });
     }
-    const user = await User.findOne({ passwordResetToken: token, passwordResetExpires: { $gt: new Date() } });
+    const user = await User.findOne({
+      passwordResetToken: hashResetToken(token),
+      passwordResetExpires: { $gt: new Date() },
+    });
     if (!user) return res.status(400).json({ message: "This reset link is invalid or expired" });
     user.password = password;
     user.passwordResetToken = null;
@@ -172,8 +191,18 @@ const resetPassword = async (req, res) => {
 // @access Private/Admin
 const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find({}).select("-password").sort({ createdAt: -1 });
-    res.json(users);
+    const { page, limit } = req.query;
+    if (!page && !limit) {
+      const users = await User.find({}).select("-password").sort({ createdAt: -1 });
+      return res.json(users);
+    }
+    const currentPage = Math.max(1, Number.parseInt(page, 10) || 1);
+    const pageSize = Math.min(100, Math.max(1, Number.parseInt(limit, 10) || 20));
+    const [users, total] = await Promise.all([
+      User.find({}).select("-password").sort({ createdAt: -1 }).skip((currentPage - 1) * pageSize).limit(pageSize),
+      User.countDocuments({}),
+    ]);
+    res.json({ items: users, pagination: { page: currentPage, limit: pageSize, total, pages: Math.ceil(total / pageSize) } });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

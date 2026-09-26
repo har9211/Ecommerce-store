@@ -2,6 +2,27 @@ const Product = require("../models/Product");
 const Category = require("../models/Category");
 const { stringify } = require("csv-stringify/sync");
 const { parse } = require("csv-parse/sync");
+const fs = require("fs/promises");
+
+function escapeRegex(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+async function hasImageSignature(filePath) {
+  const handle = await fs.open(filePath, "r");
+  try {
+    const buffer = Buffer.alloc(12);
+    const { bytesRead } = await handle.read(buffer, 0, buffer.length, 0);
+    if (bytesRead < 3) return false;
+    const isJpeg = buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff;
+    const isPng = bytesRead >= 8 && buffer.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]));
+    const isGif = bytesRead >= 6 && (buffer.subarray(0, 6).toString() === "GIF87a" || buffer.subarray(0, 6).toString() === "GIF89a");
+    const isWebp = bytesRead >= 12 && buffer.subarray(0, 4).toString() === "RIFF" && buffer.subarray(8, 12).toString() === "WEBP";
+    return isJpeg || isPng || isGif || isWebp;
+  } finally {
+    await handle.close();
+  }
+}
 
 // @route  GET /api/products
 // @desc   Get all products (supports ?category=Electronics and ?keyword=search)
@@ -14,16 +35,28 @@ const getProducts = async (req, res) => {
       filter.category = req.query.category;
     }
 
-    if (req.query.keyword) {
-      filter.name = { $regex: req.query.keyword, $options: "i" }; // case-insensitive search
+    if (typeof req.query.keyword === "string" && req.query.keyword.trim()) {
+      // Search as literal text. User input must never be interpreted as a
+      // MongoDB regular expression, which could make an expensive query.
+      filter.name = { $regex: escapeRegex(req.query.keyword.trim().slice(0, 80)), $options: "i" };
     }
 
     if (req.query.deals === "1") {
       filter.$expr = { $gt: ["$compareAtPrice", "$price"] };
     }
 
-    const products = await Product.find(filter).sort({ createdAt: -1 });
-    res.json(products);
+    const { page, limit } = req.query;
+    if (!page && !limit) {
+      const products = await Product.find(filter).sort({ createdAt: -1 });
+      return res.json(products);
+    }
+    const currentPage = Math.max(1, Number.parseInt(page, 10) || 1);
+    const pageSize = Math.min(100, Math.max(1, Number.parseInt(limit, 10) || 20));
+    const [products, total] = await Promise.all([
+      Product.find(filter).sort({ createdAt: -1 }).skip((currentPage - 1) * pageSize).limit(pageSize),
+      Product.countDocuments(filter),
+    ]);
+    res.json({ items: products, pagination: { page: currentPage, limit: pageSize, total, pages: Math.ceil(total / pageSize) } });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -93,12 +126,17 @@ const updateProduct = async (req, res) => {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    if (req.body.category) {
-      if (typeof req.body.category !== "string") return res.status(400).json({ message: "Choose a valid category" });
-      const categoryExists = await Category.exists({ name: req.body.category.trim() });
+    const allowedFields = ["handle", "name", "description", "price", "compareAtPrice", "category", "image", "stock"];
+    const updates = Object.fromEntries(
+      allowedFields.filter((field) => req.body[field] !== undefined).map((field) => [field, req.body[field]])
+    );
+    if (updates.category !== undefined) {
+      if (typeof updates.category !== "string") return res.status(400).json({ message: "Choose a valid category" });
+      const categoryExists = await Category.exists({ name: updates.category.trim() });
       if (!categoryExists) return res.status(400).json({ message: "Choose a valid category" });
+      updates.category = updates.category.trim();
     }
-    Object.assign(product, req.body); // overwrite only the fields sent in body
+    Object.assign(product, updates);
     if (product.compareAtPrice === "") product.compareAtPrice = null;
     const updatedProduct = await product.save();
 
@@ -262,9 +300,18 @@ const uploadProductImage = async (req, res) => {
     return res.status(400).json({ message: "No image file provided" });
   }
 
-  // Path the frontend can use directly: server.js serves /uploads as static files
-  const imageUrl = `/uploads/${req.file.filename}`;
-  res.json({ imageUrl });
+  try {
+    if (!(await hasImageSignature(req.file.path))) {
+      await fs.unlink(req.file.path).catch(() => {});
+      return res.status(400).json({ message: "The uploaded file is not a valid image." });
+    }
+    // Path the frontend can use directly: server.js serves /uploads as static files
+    const imageUrl = `/uploads/${req.file.filename}`;
+    res.json({ imageUrl });
+  } catch (error) {
+    await fs.unlink(req.file.path).catch(() => {});
+    res.status(400).json({ message: "Could not verify the uploaded image." });
+  }
 };
 
 module.exports = {

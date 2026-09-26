@@ -92,11 +92,6 @@ export default function Orders() {
               </span>
             </div>
 
-            {order.paymentMethod === "Card" && !order.isPaid && (
-              <Link to={`/payment/${order._id}`} className="pay-now-link">
-                Complete Payment →
-              </Link>
-            )}
           </div>
         ))}
       </div>

@@ -3,6 +3,16 @@ import { useAuth } from "./AuthContext";
 
 const CartContext = createContext();
 
+function readStoredJson(storage, key, fallback) {
+  try {
+    const value = storage.getItem(key);
+    return value ? JSON.parse(value) : fallback;
+  } catch {
+    storage.removeItem(key);
+    return fallback;
+  }
+}
+
 // Custom hook - lets any component do `const { cartItems, addToCart } = useCart()`
 // instead of importing useContext + CartContext everywhere.
 export function useCart() {
@@ -15,10 +25,10 @@ export function CartProvider({ children }) {
   const activeKey = useRef(cartKey);
   const skipWrite = useRef(true);
   const [cartItems, setCartItems] = useState(() => {
-    const initialUser = JSON.parse(sessionStorage.getItem("user") || "null");
+    const initialUser = readStoredJson(sessionStorage, "user", null);
     const initialKey = initialUser?._id ? `cart:${initialUser._id}` : null;
     const saved = initialKey ? localStorage.getItem(initialKey) : null;
-    return saved ? JSON.parse(saved) : [];
+    return saved ? readStoredJson(localStorage, initialKey, []) : [];
   });
 
   // Each signed-in user gets an isolated cart. Load their cart when the
@@ -36,7 +46,7 @@ export function CartProvider({ children }) {
     activeKey.current = cartKey;
     skipWrite.current = true;
     const saved = localStorage.getItem(cartKey);
-    setCartItems(saved ? JSON.parse(saved) : []);
+    setCartItems(saved ? readStoredJson(localStorage, cartKey, []) : []);
   }, [cartKey]);
 
   useEffect(() => {

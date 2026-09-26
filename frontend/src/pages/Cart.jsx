@@ -2,12 +2,14 @@ import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { resolveImageUrl } from "../utils/image";
+import { calculateDeliveryPrice } from "../constants/commerce";
 import "./Cart.css";
 
 export default function Cart() {
   const { cartItems, removeFromCart, updateQuantity, totalPrice } = useCart();
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const deliveryPrice = calculateDeliveryPrice(totalPrice);
 
   const handleCheckout = () => {
     if (!isAuthenticated) {
@@ -96,12 +98,12 @@ export default function Cart() {
           </div>
           <div className="summary-row">
             <span>Delivery</span>
-            <span>{totalPrice >= 999 ? "Free" : "₹49"}</span>
+            <span>{deliveryPrice === 0 ? "Free" : `₹${deliveryPrice}`}</span>
           </div>
           <div className="summary-row summary-total">
             <span>Total</span>
             <span>
-              ₹{(totalPrice + (totalPrice >= 999 ? 0 : 49)).toLocaleString("en-IN")}
+              ₹{(totalPrice + deliveryPrice).toLocaleString("en-IN")}
             </span>
           </div>
           <button className="checkout-btn" onClick={handleCheckout}>

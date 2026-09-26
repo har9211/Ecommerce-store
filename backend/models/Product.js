@@ -47,6 +47,7 @@ const productSchema = new mongoose.Schema(
       min: 0,
       default: 0,
     },
+    unitsSold: { type: Number, min: 0, default: 0 },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

@@ -25,7 +25,7 @@ export default function Login() {
       const userData = await login(email, password);
 
       if (userData.role === "admin") {
-        navigate("/admin/dashboard");
+        navigate("/admin");
       } else {
         const redirectTo = location.state?.from || "/";
         navigate(redirectTo);

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import api from "../api/axios";
 import "./Auth.css";
 
@@ -8,7 +8,6 @@ export default function ForgotPassword() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
 
   const submit = async (event) => {
     event.preventDefault();
@@ -17,7 +16,6 @@ export default function ForgotPassword() {
     try {
       const { data } = await api.post("/auth/forgot-password", { email });
       setMessage(data.message);
-      if (data.resetToken) navigate(`/reset-password?token=${encodeURIComponent(data.resetToken)}`);
     } catch (err) {
       setError(err.response?.data?.message || "Could not start password reset.");
     } finally {

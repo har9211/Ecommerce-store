@@ -3,6 +3,17 @@ import api from "../api/axios";
 
 const AuthContext = createContext();
 
+function readSessionUser() {
+  try {
+    const saved = sessionStorage.getItem("user");
+    return saved ? JSON.parse(saved) : null;
+  } catch {
+    sessionStorage.removeItem("user");
+    sessionStorage.removeItem("token");
+    return null;
+  }
+}
+
 export function useAuth() {
   return useContext(AuthContext);
 }
@@ -10,8 +21,7 @@ export function useAuth() {
 export function AuthProvider({ children }) {
   // Load saved user on first render, so a page refresh doesn't log you out.
   const [user, setUser] = useState(() => {
-    const saved = sessionStorage.getItem("user");
-    return saved ? JSON.parse(saved) : null;
+    return readSessionUser();
   });
 
   const login = async (email, password) => {
