@@ -1,5 +1,7 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
 import { resolveImageUrl } from "../utils/image";
 import "./ProductCard.css";
 
@@ -20,10 +22,15 @@ export default function ProductCard({ product }) {
   const discount = getDiscount(product);
   const rating = getRating(product);
   const { addToCart } = useCart();
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
   const [justAdded, setJustAdded] = useState(false);
-  const [wishlisted, setWishlisted] = useState(false);
 
   const handleAddToCart = () => {
+    if (!isAuthenticated) {
+      navigate("/login");
+      return;
+    }
     addToCart(product);
     setJustAdded(true);
     setTimeout(() => setJustAdded(false), 1500);
@@ -35,16 +42,6 @@ export default function ProductCard({ product }) {
     <div className="product-card">
       <div className="product-image">
         {discount && <span className="product-discount-badge">-{discount}%</span>}
-        <button
-          className={`product-wishlist-btn ${wishlisted ? "active" : ""}`}
-          aria-label="Add to wishlist"
-          onClick={(e) => {
-            e.preventDefault();
-            setWishlisted((w) => !w);
-          }}
-        >
-          ♥
-        </button>
         {product.image ? (
           <img src={resolveImageUrl(product.image)} alt={product.name} />
         ) : (

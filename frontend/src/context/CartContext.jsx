@@ -11,19 +11,27 @@ export function useCart() {
 
 export function CartProvider({ children }) {
   const { user } = useAuth();
-  const cartKey = user?._id ? `cart:${user._id}` : "cart:guest";
+  const cartKey = user?._id ? `cart:${user._id}` : null;
   const activeKey = useRef(cartKey);
   const skipWrite = useRef(true);
   const [cartItems, setCartItems] = useState(() => {
     const initialUser = JSON.parse(sessionStorage.getItem("user") || "null");
-    const initialKey = initialUser?._id ? `cart:${initialUser._id}` : "cart:guest";
-    const saved = localStorage.getItem(initialKey);
+    const initialKey = initialUser?._id ? `cart:${initialUser._id}` : null;
+    const saved = initialKey ? localStorage.getItem(initialKey) : null;
     return saved ? JSON.parse(saved) : [];
   });
 
   // Each signed-in user gets an isolated cart. Load their cart when the
   // identity changes, then save only after that load has completed.
   useEffect(() => {
+    // A cart belongs to a signed-in account. Never show or retain a guest cart.
+    if (!cartKey) {
+      activeKey.current = null;
+      skipWrite.current = true;
+      setCartItems([]);
+      return;
+    }
+
     if (activeKey.current === cartKey) return;
     activeKey.current = cartKey;
     skipWrite.current = true;
@@ -32,6 +40,7 @@ export function CartProvider({ children }) {
   }, [cartKey]);
 
   useEffect(() => {
+    if (!cartKey) return;
     if (skipWrite.current) {
       skipWrite.current = false;
       return;
@@ -40,6 +49,7 @@ export function CartProvider({ children }) {
   }, [cartItems, cartKey]);
 
   const addToCart = (product) => {
+    if (!user) return false;
     setCartItems((prev) => {
       const existing = prev.find((item) => item._id === product._id);
 
@@ -55,6 +65,7 @@ export function CartProvider({ children }) {
       // new item - add with quantity 1
       return [...prev, { ...product, quantity: 1 }];
     });
+    return true;
   };
 
   const removeFromCart = (productId) => {

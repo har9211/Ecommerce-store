@@ -51,27 +51,6 @@
   color: #fff;
 }
 
-.product-wishlist-btn {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  z-index: 1;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.9);
-  color: var(--color-text-muted);
-  font-size: 13px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-}
-
-.product-wishlist-btn.active {
-  color: var(--color-danger);
-}
-
 .product-info {
   position: relative;
   padding: 12px 14px 16px;

@@ -5,8 +5,9 @@ import { SERVER_URL } from "../api/axios";
 // sure both display correctly no matter which one was used.
 export function resolveImageUrl(image) {
   if (!image) return "";
-  if (image.startsWith("http://") || image.startsWith("https://")) {
-    return image;
+  const normalizedImage = image.replaceAll("\\", "/");
+  if (normalizedImage.startsWith("http://") || normalizedImage.startsWith("https://")) {
+    return normalizedImage;
   }
-  return `${SERVER_URL}${image}`;
+  return `${SERVER_URL}/${normalizedImage.replace(/^\/+/, "")}`;
 }

@@ -82,7 +82,6 @@ function AppShell() {
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/category/:categoryName" element={<CategoryPage />} />
             <Route path="/search" element={<ProductListing />} />
-            <Route path="/wishlist" element={<InfoPage />} />
             <Route path="/coupons" element={<InfoPage />} />
             <Route path="/notifications" element={<InfoPage />} />
             <Route path="/contact" element={<InfoPage />} />

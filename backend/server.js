@@ -11,7 +11,13 @@ connectDB();
 const app = express();
 
 // Middleware
-app.use(helmet()); // sets secure HTTP headers (hides tech stack, blocks some attack classes)
+app.use(
+  helmet({
+    // Product images are requested by the frontend on a different local origin
+    // during development, so they must be allowed to load cross-origin.
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+  })
+); // sets secure HTTP headers (hides tech stack, blocks some attack classes)
 
 // Only allow requests from your actual frontend, not any website on the internet.
 // Falls back to the local dev URL if FRONTEND_URL isn't set in .env.

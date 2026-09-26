@@ -49,11 +49,6 @@ export default function TopBar({ onOpenSidebar, onOpenCart }) {
       <Link to="/" className="topbar-brand" aria-label="QuickKart home">QuickKart</Link>
 
       <div className="topbar-actions">
-        <Link to="/wishlist" className="topbar-icon-btn" aria-label="Wishlist">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 20.5s-7.5-4.6-9.8-9.2C.6 7.7 2.6 4 6.3 4c2 0 3.6 1.1 4.7 2.8C12.1 5.1 13.7 4 15.7 4c3.7 0 5.7 3.7 4.1 7.3-2.3 4.6-9.8 9.2-9.8 9.2Z" />
-          </svg>
-        </Link>
         <button className="topbar-cart-btn" onClick={onOpenCart} aria-label="Open cart">🛒 Cart</button>
 
         <Link to="/notifications" className="topbar-icon-btn" aria-label="Notifications">
